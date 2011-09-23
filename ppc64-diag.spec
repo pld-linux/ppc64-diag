@@ -2,12 +2,12 @@
 Summary:	Diagnostics tools for Linux on Power platform
 Summary(pl.UTF-8):	Narzędzia diagnostyczne dla Linuksa na platformie Power
 Name:		ppc64-diag
-Version:	2.4.0
+Version:	2.4.2
 Release:	0.1
 License: 	International License Agreement for Non-Warranted Programs (ILAN) 
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/linux-diag/%{name}-%{version}.tar.gz
-# Source0-md5:	d7e591c7ba9665f347cfd1fb1e009d5a
+# Source0-md5:	a6425e3d1fff74fdda4335136196eecf
 Patch0:		%{name}-destdir.patch
 URL:		http://linux-diag.sourceforge.net/ppc64-diag/
 BuildRequires:	bison
@@ -105,10 +105,12 @@ fi
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/cxgb3
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/e1000e
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/exceptions
+%config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/gpfs
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/reporters
 %dir %{_sysconfdir}/ppc64-diag/message_catalog/with_regex
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/cxgb3
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/e1000e
+%config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/gpfs
 %config(noreplace) /etc/rc.powerfail
 %config(noreplace) /etc/rc.d/init.d/rtas_errd
 %dir /var/log/ppc64-diag
