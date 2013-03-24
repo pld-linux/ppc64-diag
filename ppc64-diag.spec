@@ -2,24 +2,29 @@
 Summary:	Diagnostics tools for Linux on Power platform
 Summary(pl.UTF-8):	Narzędzia diagnostyczne dla Linuksa na platformie Power
 Name:		ppc64-diag
-Version:	2.4.2
+Version:	2.6.1
 Release:	0.1
 License: 	International License Agreement for Non-Warranted Programs (ILAN) 
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/linux-diag/%{name}-%{version}.tar.gz
-# Source0-md5:	a6425e3d1fff74fdda4335136196eecf
+# Source0-md5:	5905899657dad48016fbf1e79fb93766
 Patch0:		%{name}-destdir.patch
+Patch1:		%{name}-glibc.patch
 URL:		http://linux-diag.sourceforge.net/ppc64-diag/
 BuildRequires:	bison
 BuildRequires:	flex
+BuildRequires:	librtas-devel
 BuildRequires:	libservicelog-devel
 BuildRequires:	libstdc++-devel
+BuildRequires:	ncurses-devel
 BuildRequires:	sed >= 4.0
+BuildRequires:	sqlite3-devel
 Requires(post,preun):	rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	lsvpd >= 0.14
 Requires:	rc-scripts
 Requires:	servicelog >= 1.1
+Conflicts:	powerpc-utils-ibm < 1.2.15
 ExclusiveArch:	ppc ppc64
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
@@ -44,14 +49,15 @@ ustawić w /etc/ppc64-diag/ppc64-diag.config.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
-sed -i -e 's/yacc/bison -y/' ela/Makefile
+%{__sed} -i -e 's/yacc/bison -y/' ela/Makefile
 
 %build
 %{__make} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	CFLAGS="%{rpmcflags} -Wall" \
+	CFLAGS="%{rpmcflags} -Wall -I/usr/include/ncurses" \
 	CXXFLAGS="%{rpmcxxflags} -Wall" \
 	YACC="bison -y"
 
@@ -90,16 +96,23 @@ fi
 
 %files
 %defattr(644,root,root,755)
-%doc COPYRIGHT Changelog
+%doc COPYRIGHT
 %attr(755,root,root) %{_sbindir}/add_regex
 %attr(755,root,root) %{_sbindir}/convert_dt_node_props
 %attr(755,root,root) %{_sbindir}/diag_encl
+%attr(755,root,root) %{_sbindir}/encl_led
 %attr(755,root,root) %{_sbindir}/explain_syslog
 %attr(755,root,root) %{_sbindir}/extract_platdump
+%attr(755,root,root) %{_sbindir}/lp_diag
 %attr(755,root,root) %{_sbindir}/rtas_errd
+%attr(755,root,root) %{_sbindir}/usysattn
+%attr(755,root,root) %{_sbindir}/usysident
 %dir %{_sysconfdir}/ppc64-diag
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ppc64-diag/ppc64-diag.config
+%attr(754,root,root) %{_sysconfdir}/ppc64-diag/lp_diag_notify
+%attr(754,root,root) %{_sysconfdir}/ppc64-diag/lp_diag_setup
 %attr(754,root,root) %{_sysconfdir}/ppc64-diag/ppc64_diag_*
+%attr(754,root,root) %{_sysconfdir}/ppc64-diag/prrn_hotplug
 %{_sysconfdir}/ppc64-diag/servevent_parse.pl
 %dir %{_sysconfdir}/ppc64-diag/message_catalog
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/cxgb3
@@ -114,5 +127,11 @@ fi
 %config(noreplace) /etc/rc.powerfail
 %config(noreplace) /etc/rc.d/init.d/rtas_errd
 %dir /var/log/ppc64-diag
+%{_mandir}/man8/diag_encl.8*
+%{_mandir}/man8/encl_led.8*
 %{_mandir}/man8/explain_syslog.8*
+%{_mandir}/man8/lp_diag.8*
 %{_mandir}/man8/syslog_to_svclog.8*
+%{_mandir}/man8/usysattn.8*
+%{_mandir}/man8/usysfault.8*
+%{_mandir}/man8/usysident.8*
