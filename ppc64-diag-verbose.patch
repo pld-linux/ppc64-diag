@@ -1,0 +1,21 @@
+--- ppc64-diag-2.6.9/rules.mk.orig	2015-06-29 12:37:42.000000000 +0200
++++ ppc64-diag-2.6.9/rules.mk	2015-07-02 16:55:52.475139765 +0200
+@@ -211,7 +211,6 @@
+ 
+ # Default target for building object files
+ %.o: %.c
+-	@echo "CC $(WORK_DIR)/$@"
+-	@$(CC) -c $(AM_CFLAGS) $(CFLAGS) $<
++	$(CC) -c $(AM_CFLAGS) $(CFLAGS) $<
+ 
+ 
+--- ppc64-diag-2.6.9/Makefile.orig	2015-06-29 12:37:42.000000000 +0200
++++ ppc64-diag-2.6.9/Makefile	2015-07-02 16:56:03.425139305 +0200
+@@ -4,7 +4,6 @@
+ 
+ include rules.mk
+ 
+-.SILENT:
+ BUILD_DIR=$(CURDIR)
+ 
+ SUBDIRS = common rtas_errd diags scripts ela lpd opal_errd opal-dump-parse

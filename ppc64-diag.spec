@@ -1,21 +1,21 @@
-# TODO: PLDify init script
+# TODO: PLDify init scripts
 Summary:	Diagnostics tools for Linux on Power platform
 Summary(pl.UTF-8):	Narzędzia diagnostyczne dla Linuksa na platformie Power
 Name:		ppc64-diag
-Version:	2.6.1
+Version:	2.6.9
 Release:	0.1
 License: 	International License Agreement for Non-Warranted Programs (ILAN) 
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/linux-diag/%{name}-%{version}.tar.gz
-# Source0-md5:	5905899657dad48016fbf1e79fb93766
-Patch0:		%{name}-destdir.patch
-Patch1:		%{name}-glibc.patch
+# Source0-md5:	3f2eb7bcd8a79558eede3e313c2b5e14
+Patch0:		%{name}-verbose.patch
 URL:		http://linux-diag.sourceforge.net/ppc64-diag/
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	librtas-devel
 BuildRequires:	libservicelog-devel
 BuildRequires:	libstdc++-devel
+BuildRequires:	libvpd-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	sed >= 4.0
 BuildRequires:	sqlite3-devel
@@ -49,26 +49,27 @@ ustawić w /etc/ppc64-diag/ppc64-diag.config.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
-%{__sed} -i -e 's/yacc/bison -y/' ela/Makefile
+%{__sed} -i -e 's/yacc/\$(YACC)/' ela/Makefile
+
+%{__sed} -i -e 's,/usr/libexec/ppc64-diag/,/etc/rc.d/init.d/,' scripts/*.service
 
 %build
+CFLAGS="%{rpmcflags}" \
+CXXFLAGS="%{rpmcxxflags}" \
 %{__make} \
 	CC="%{__cc}" \
 	CXX="%{__cxx}" \
-	CFLAGS="%{rpmcflags} -Wall -I/usr/include/ncurses" \
-	CXXFLAGS="%{rpmcxxflags} -Wall" \
 	YACC="bison -y"
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT
-
-install -d $RPM_BUILD_ROOT/etc/rc.d
-mv $RPM_BUILD_ROOT/etc/init.d $RPM_BUILD_ROOT/etc/rc.d
+	DESTDIR=$RPM_BUILD_ROOT \
+	LIB_DIR=%{_libdir} \
+	LIBEXEC_DIR=/etc/rc.d/init.d \
+	SYSTEMD_DIR=%{systemdunitdir}
 
 %{__rm} -r $RPM_BUILD_ROOT%{_docdir}/packages
 
@@ -102,9 +103,14 @@ fi
 %attr(755,root,root) %{_sbindir}/diag_encl
 %attr(755,root,root) %{_sbindir}/encl_led
 %attr(755,root,root) %{_sbindir}/explain_syslog
+%attr(755,root,root) %{_sbindir}/extract_opal_dump
 %attr(755,root,root) %{_sbindir}/extract_platdump
 %attr(755,root,root) %{_sbindir}/lp_diag
+%attr(755,root,root) %{_sbindir}/opal-dump-parse
+%attr(755,root,root) %{_sbindir}/opal-elog-parse
+%attr(755,root,root) %{_sbindir}/opal_errd
 %attr(755,root,root) %{_sbindir}/rtas_errd
+%attr(755,root,root) %{_sbindir}/syslog_to_svclog
 %attr(755,root,root) %{_sbindir}/usysattn
 %attr(755,root,root) %{_sbindir}/usysident
 %dir %{_sysconfdir}/ppc64-diag
@@ -125,12 +131,18 @@ fi
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/e1000e
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/gpfs
 %config(noreplace) /etc/rc.powerfail
+%config(noreplace) /etc/rc.d/init.d/opal_errd
 %config(noreplace) /etc/rc.d/init.d/rtas_errd
+%{systemdunitdir}/opal_errd.service
+%{systemdunitdir}/rtas_errd.service
 %dir /var/log/ppc64-diag
 %{_mandir}/man8/diag_encl.8*
 %{_mandir}/man8/encl_led.8*
 %{_mandir}/man8/explain_syslog.8*
 %{_mandir}/man8/lp_diag.8*
+%{_mandir}/man8/opal-dump-parse.8*
+%{_mandir}/man8/opal-elog-parse.8*
+%{_mandir}/man8/opal_errd.8*
 %{_mandir}/man8/syslog_to_svclog.8*
 %{_mandir}/man8/usysattn.8*
 %{_mandir}/man8/usysfault.8*
