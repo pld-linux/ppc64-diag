@@ -1,12 +1,12 @@
---- ppc64-diag-2.6.9/rules.mk.orig	2015-06-29 12:37:42.000000000 +0200
-+++ ppc64-diag-2.6.9/rules.mk	2015-07-02 16:55:52.475139765 +0200
+--- ppc64-diag-2.7.2/rules.mk.orig	2016-10-16 20:16:44.027007075 +0200
++++ ppc64-diag-2.7.2/rules.mk	2016-10-16 20:17:20.760339988 +0200
 @@ -211,7 +211,6 @@
  
  # Default target for building object files
  %.o: %.c
 -	@echo "CC $(WORK_DIR)/$@"
--	@$(CC) -c $(AM_CFLAGS) $(CFLAGS) $<
-+	$(CC) -c $(AM_CFLAGS) $(CFLAGS) $<
+-	@$(CC) -c $(AM_CFLAGS) $(CFLAGS) $(CPPFLAGS) $<
++	$(CC) -c $(AM_CFLAGS) $(CFLAGS) $(CPPFLAGS) $<
  
  
 --- ppc64-diag-2.6.9/Makefile.orig	2015-06-29 12:37:42.000000000 +0200

@@ -2,12 +2,12 @@
 Summary:	Diagnostics tools for Linux on Power platform
 Summary(pl.UTF-8):	Narzędzia diagnostyczne dla Linuksa na platformie Power
 Name:		ppc64-diag
-Version:	2.7.1
+Version:	2.7.2
 Release:	0.1
 License: 	GPL v2+
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/linux-diag/%{name}-%{version}.tar.gz
-# Source0-md5:	8ccb173cf4a6987cce6ec173512d55d7
+# Source0-md5:	e25d744043a29f9d5d2fb7c718958b34
 Patch0:		%{name}-verbose.patch
 URL:		http://linux-diag.sourceforge.net/ppc64-diag/
 BuildRequires:	bison
@@ -117,7 +117,6 @@ fi
 %attr(754,root,root) %{_sysconfdir}/ppc64-diag/lp_diag_notify
 %attr(754,root,root) %{_sysconfdir}/ppc64-diag/lp_diag_setup
 %attr(754,root,root) %{_sysconfdir}/ppc64-diag/ppc64_diag_*
-%attr(754,root,root) %{_sysconfdir}/ppc64-diag/prrn_hotplug
 %{_sysconfdir}/ppc64-diag/servevent_parse.pl
 %dir %{_sysconfdir}/ppc64-diag/message_catalog
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/cxgb3
