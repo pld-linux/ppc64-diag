@@ -2,23 +2,26 @@
 Summary:	Diagnostics tools for Linux on Power platform
 Summary(pl.UTF-8):	Narzędzia diagnostyczne dla Linuksa na platformie Power
 Name:		ppc64-diag
-Version:	2.7.3
+Version:	2.7.6
 Release:	0.1
 License: 	GPL v2+
 Group:		Applications/System
 Source0:	http://downloads.sourceforge.net/linux-diag/%{name}-%{version}.tar.gz
-# Source0-md5:	fcda83adad468e5310a5fece5fc8d0d5
-Patch0:		%{name}-verbose.patch
+# Source0-md5:	06d356203a432720911189919f6fdeec
+Patch0:		%{name}-install.patch
 URL:		http://linux-diag.sourceforge.net/ppc64-diag/
+BuildRequires:	autoconf >= 2.69
+BuildRequires:	automake >= 1:1.11
 BuildRequires:	bison
 BuildRequires:	flex
 BuildRequires:	librtas-devel
 BuildRequires:	libservicelog-devel
 BuildRequires:	libstdc++-devel
-BuildRequires:	libvpd-devel
+BuildRequires:	libtool >= 2:2
+BuildRequires:	libvpd-devel >= 2
 BuildRequires:	ncurses-devel
-BuildRequires:	sed >= 4.0
 BuildRequires:	sqlite3-devel
+BuildRequires:	udev-devel
 Requires(post,preun):	rc-scripts
 Requires(post,preun):	/sbin/chkconfig
 Requires:	lsvpd >= 0.14
@@ -50,28 +53,25 @@ ustawić w /etc/ppc64-diag/ppc64-diag.config.
 %setup -q
 %patch0 -p1
 
-%{__sed} -i -e 's/yacc/\$(YACC)/' ela/Makefile
-
-%{__sed} -i -e 's,/usr/libexec/ppc64-diag/,/etc/rc.d/init.d/,' scripts/*.service
-
 %build
-CFLAGS="%{rpmcflags}" \
-CXXFLAGS="%{rpmcxxflags}" \
-%{__make} \
-	CC="%{__cc}" \
-	CXX="%{__cxx}" \
-	YACC="bison -y"
+%{__libtoolize}
+%{__aclocal} -I m4
+%{__autoconf}
+%{__autoheader}
+%{__automake}
+%configure \
+	--disable-silent-rules
+
+%{__make}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 
 %{__make} install \
-	DESTDIR=$RPM_BUILD_ROOT \
-	LIB_DIR=%{_libdir} \
-	LIBEXEC_DIR=/etc/rc.d/init.d \
-	SYSTEMD_DIR=%{systemdunitdir}
+	DESTDIR=$RPM_BUILD_ROOT
 
-%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/packages
+# packaged as %doc
+%{__rm} -r $RPM_BUILD_ROOT%{_docdir}/ppc64-diag
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -97,6 +97,7 @@ fi
 
 %files
 %defattr(644,root,root,755)
+%doc README TODO
 %attr(755,root,root) %{_sbindir}/add_regex
 %attr(755,root,root) %{_sbindir}/convert_dt_node_props
 %attr(755,root,root) %{_sbindir}/diag_encl
@@ -111,6 +112,7 @@ fi
 %attr(755,root,root) %{_sbindir}/rtas_errd
 %attr(755,root,root) %{_sbindir}/syslog_to_svclog
 %attr(755,root,root) %{_sbindir}/usysattn
+%attr(755,root,root) %{_sbindir}/usysfault
 %attr(755,root,root) %{_sbindir}/usysident
 %dir %{_sysconfdir}/ppc64-diag
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/ppc64-diag/ppc64-diag.config
@@ -128,6 +130,7 @@ fi
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/cxgb3
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/e1000e
 %config(noreplace) %{_sysconfdir}/ppc64-diag/message_catalog/with_regex/gpfs
+#/etc/cron.daily/run_diag_encl
 %config(noreplace) /etc/rc.powerfail
 %config(noreplace) /etc/rc.d/init.d/opal_errd
 %config(noreplace) /etc/rc.d/init.d/rtas_errd
