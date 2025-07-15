@@ -56,7 +56,7 @@ ustawić w /etc/ppc64-diag/ppc64-diag.config.
 
 %prep
 %setup -q
-%patch0 -p1
+%patch -P0 -p1
 
 %build
 %{__libtoolize}
